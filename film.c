@@ -18,6 +18,9 @@ film formats[FORMAT_NUMBER];
 
 float calc_length(float run_time, float fps, film arr[], int selectedFormat);
 
+// Function to retrieve URL based on film format and length
+const char* getPriceURL(int selectedFormat, float length);
+
 int main(void) {
     // Populate film formats array
     strcpy(formats[0].format, "8mm");
@@ -77,14 +80,39 @@ int main(void) {
         if (selectedFormat >= 0 && selectedFormat < FORMAT_NUMBER) {
             float length = calc_length(run_time, fps, formats, selectedFormat);
             printf("Length of film needed: %.2f feet\n", length);
-        } else {
-            printf("Invalid format choice\n");
-        }
+            
+        // Calculate short ends length based on film length
+if (length <= 100.0) {
+    printf("You only need one 100ft roll\n");
+    printf("Short ends length = %d feet\n", 100 - (int)length);
+} else if (length <= 400.0) {
+    printf("You need one 400ft roll\n");
+    printf("Short ends length = %d feet\n", 400 - (int)length);
+} else if(length < 1800.0 ) {
+    int rolls400 = (int)length / 400;
+    int remainingLength = (int)length % 400;
+
+    if (remainingLength > 100) {
+        printf("You need %d rolls of 400ft film\n", rolls400+1);
+        printf("Short ends length = %d feet\n", 400 - remainingLength);
+    } else if (remainingLength > 0) {
+        printf("You need %d rolls of 400ft film and one 100ft roll\n", rolls400);
+        printf("Short ends length = %d feet\n", 100 - remainingLength);
+    } else {
+        printf("You need %d rolls of 400ft film\n", rolls400);
+        printf("No short ends\n");
+    }
+}
+
+            
     } else {
         printf("Invalid format choice\n");
     }
+} else {
+    printf("Invalid format choice\n");
+}
 
-    return 0;
+return 0;
 }
 
 float calc_length(float run_time, float fps, film arr[], int selectedFormat) {
@@ -98,3 +126,6 @@ float calc_length(float run_time, float fps, film arr[], int selectedFormat) {
         return -1.0; // Invalid format index
     }
 }
+
+//Add a function to specify the shooting ratio e.g 20:1
+
